@@ -56,8 +56,43 @@
 ### getpgrp()
 ### getpgid()
 ### setpgid()
+### 单实例守护进程：锁文件
+### 启动脚本文件
 ## 11、系统日志
 ### syslogd服务
 ### openlog()
 ### syslog()
 ### closelog()
+# 并发
+## 信号
+### 1、信号的概念
+信号是软件中断
+信号的响应依赖于中断
+### 2、signal();
+```
+    #include <signal.h>
+
+    typedef void (*sighandler_t)(int);
+
+    sighandler_t signal(int signum, sighandler_t handler);
+```
+信号会打断阻塞的系统调用
+### 3、信号的不可靠
+### 4、可重入函数
+### 5、信号的响应过程
+### 6、信号相关的常用函数
+#### 6.1、kill();
+#### 6.2、raise();
+#### 6.3、alsrm();
+#### 6.4、pause();
+#### 6.5、abort();
+#### 6.6、system();
+#### 6.7、sleep();
+### 7、信号集
+### 8、信号屏蔽字/pendding集的处理
+### 9、扩展
+#### 9.1、sigsuspend();
+#### 9.2、sigaction();
+#### 9.3、setitimer();
+### 10、实时信号
+## 线程
