@@ -77,14 +77,53 @@
     sighandler_t signal(int signum, sighandler_t handler);
 ```
 信号会打断阻塞的系统调用
-### 3、信号的不可靠
+### 3、信号的（行为）不可靠
 ### 4、可重入函数
+所有的系统调用都是可重入的，一部分库函数也是可重入的
 ### 5、信号的响应过程
+信号从响应到收到有一个不可避免的延迟
+标准信息的响应没有严格的顺序
 ### 6、信号相关的常用函数
 #### 6.1、kill();
+```
+    #include <sys/types.h>
+    #include <signal.h>
+
+    int kill(pid_t pid, int sig);
+
+DESCRIPTION
+    If pid is positive, then signal sig is sent to the process  with  the ID specified by pid.
+
+    If  pid  equals  0,  then sig is sent to every process in the process group of the calling process.
+
+    If pid equals -1, then sig is sent to every process  for  which  the calling  process has permission to send signals, except for process 1(init), but see below.
+
+    If pid is less than -1, then sig is sent  to every  process  in  the process group whose ID is -pid.
+
+    If  sig  is  0,  then no signal is sent, but existence and permission checks are still performed; this can be used to check for  the  exis‐tence  of a process ID or process group ID that the caller is permit‐ted to signal.
+```
 #### 6.2、raise();
-#### 6.3、alsrm();
+```
+    #include <signal.h>
+
+    int raise(int sig);
+
+    给自己发送信号，相当于
+    kill(getpid(), sig);
+```
+#### 6.3、alarm();
+```
+    #include <unistd.h>
+
+    unsigned int alarm(unsigned int seconds);
+
+```
 #### 6.4、pause();
+```
+    #include <unistd.h>
+
+    int pause(void);
+```
 #### 6.5、abort();
 #### 6.6、system();
 #### 6.7、sleep();
