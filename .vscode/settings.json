@@ -58,7 +58,7 @@
         ".clang-format": "yaml",
         ".clang-tidy": "yaml",
     },
-    "cmake.sourceDirectory": "/home/yzx/vscode/workspace/B+Tree",
+    "cmake.sourceDirectory": "/home/yzx/vscode/workspace/unixenv",
     "[c]": {
         "editor.defaultFormatter": "xaver.clang-format"
     },

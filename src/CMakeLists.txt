@@ -1,3 +1,3 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(unix)
-add_executable(signal01 signal01.cpp)
+add_executable(sigsuspend sigsuspend.cpp)

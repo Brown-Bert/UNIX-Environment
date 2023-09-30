@@ -69,7 +69,7 @@
 信号是软件中断
 信号的响应依赖于中断
 ```
-eg:/home/yzx/test/signal/signal01.cpp
+eg: signal01.cpp
 ```
 ### 2、signal();
 ```
@@ -85,7 +85,8 @@ eg:/home/yzx/test/signal/signal01.cpp
 所有的系统调用都是可重入的，一部分库函数也是可重入的
 ### 5、信号的响应过程
 信号从响应到收到有一个不可避免的延迟
-标准信息的响应没有严格的顺序
+标准信号的响应没有严格的顺序
+不能从信号响应函数随意往外跳（setjmp, longjmp）
 ### 6、信号相关的常用函数
 #### 6.1、kill();
 ```
@@ -121,8 +122,25 @@ DESCRIPTION
     unsigned int alarm(unsigned int seconds);
 ```
 ```
-    eg: /home/yzx/test/signal/signaltime.cpp 
-        /home/yzx/test/signal/signalalarm.cpp
+    eg: signaltime.cpp 
+        signalalarm.cpp
+```
+```
+    #include <sys/time.h>
+
+    int getitimer(int which, struct itimerval *curr_value);
+    int setitimer(int which, const struct itimerval *new_value, struct itimerval *old_value);
+
+    struct itimerval {
+        struct timeval it_interval; /* Interval for periodic timer */
+        struct timeval it_value;    /* Time until next expiration */
+    };
+
+    struct timeval {
+        time_t      tv_sec;         /* seconds */
+        suseconds_t tv_usec;        /* microseconds */
+    };
+
 ```
 #### 6.4、pause();
 ```
@@ -131,13 +149,76 @@ DESCRIPTION
     int pause(void);
 ```
 #### 6.5、abort();
+给当前进程发送一个SIGABRT的信号，终止当前信号
+```
+    #include <stdlib.h>
+
+    void abort(void);
+
+```
 #### 6.6、system();
+```
+    #include <stdlib.h>
+
+    int system(const char *command);
+
+    During  execution of the command, SIGCHLD will be blocked, and SIGINT and SIGQUIT will be ignored, in  the  process  that  calls  system().
+```
 #### 6.7、sleep();
+不建议使用sleep，因为在有些平台sleep底层使用的是alarm+pause封装，当程序本身有使用信号alarm的时候，如果再使用sleep就有可能造成alarm的覆盖，从而导致程序混乱（有些平台使用nanosleep封装，此时就不会产生混乱）看手册
 ### 7、信号集
+#### 信号集类型：sigset_t
+```
+    #include <signal.h>
+
+    int sigemptyset(sigset_t *set);
+
+    int sigfillset(sigset_t *set);
+
+    int sigaddset(sigset_t *set, int signum);
+
+    int sigdelset(sigset_t *set, int signum);
+
+    int sigismember(const sigset_t *set, int signum);
+
+```
 ### 8、信号屏蔽字/pendding集的处理
+```
+    #include <signal.h>
+
+    /* Prototype for the glibc wrapper function */
+    int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+
+    eg: signalblock.cpp
+
+    #include <signal.h>
+
+    int sigpending(sigset_t *set);
+```
 ### 9、扩展
 #### 9.1、sigsuspend();
+```
+    #include <signal.h>
+
+    int sigsuspend(const sigset_t *mask);
+
+    eg: sigsuspend.cpp
+```
 #### 9.2、sigaction();
-#### 9.3、setitimer();
+```
+    #include <signal.h>
+
+    int sigaction(int signum, const struct sigaction *act,struct sigaction *oldact);
+
+    struct sigaction {
+        void     (*sa_handler)(int); // 可防止重入
+        void     (*sa_sigaction)(int, siginfo_t *, void *); // 可判断信号来源
+        sigset_t   sa_mask;
+        int        sa_flags;
+        void     (*sa_restorer)(void);
+    };
+    相比于signal注册信号的行为，sigaction可防止signal的重入现象，以及signal无法判断信号的来源（看手册）
+```
 ### 10、实时信号
+实时信号不丢失，要排队有上限（ulimit -a）
 ## 线程
