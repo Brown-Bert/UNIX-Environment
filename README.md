@@ -68,6 +68,9 @@
 ### 1、信号的概念
 信号是软件中断
 信号的响应依赖于中断
+```
+eg:/home/yzx/test/signal/signal01.cpp
+```
 ### 2、signal();
 ```
     #include <signal.h>
@@ -116,7 +119,10 @@ DESCRIPTION
     #include <unistd.h>
 
     unsigned int alarm(unsigned int seconds);
-
+```
+```
+    eg: /home/yzx/test/signal/signaltime.cpp 
+        /home/yzx/test/signal/signalalarm.cpp
 ```
 #### 6.4、pause();
 ```
