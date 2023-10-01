@@ -17,6 +17,17 @@
 #### init进程是所有进程的祖先进程
 程序中父进程创建了子进程，并不一定是谁先执行，而是由调度器的调度策略决定哪个进程先执行。用例`/home/yzx/test/fork.cpp`(要用fflush刷新所有打开的流)
 ### （2）vfork()
+## 3、进程的终止
+### 3.1、正常终止
+#### 3.1.1、从main函数返回，例如return
+#### 3.1.2、调用exit，会执行钩子函数
+#### 3.1.3、调用_exit/_Exit，不会执行钩子函数
+#### 3.1.4、最后一个线程从其启动例程返回
+#### 3.1.5、最后一个线程调用pthread_exit()
+### 3.2、异常终止
+#### 3.2.1、调用abort
+#### 3.2.2、接到一个信号并终止
+#### 3.2.3、最后一个线程对其取消请求做出响应
 ## 3、进程的消亡以及释放资源
 ### wait()
 ### waitpid()
@@ -370,11 +381,17 @@ RETURN VALUE
     #include <pthread.h>
 
     void pthread_cleanup_push(void (*routine)(void *), void *arg);
-    void pthread_cleanup_pop(int execute);
-
+    void pthread_cleanup_pop(int execute); // 如果在pthread_exit()之后执行pop，那么会
+    把execute当真处理，相比较于进程，如果放到exit后面，相当于是根本没有进行钩子函数的挂载
     Compile and link with -pthread.
 ```
 #### 2.3、线程的取消选项
+```
+    #include <pthread.h>
+
+    int pthread_cancel(pthread_t thread);
+    Compile and link with -pthread
+```
 ### 3、线程同步
 ### 4、线程相关的属性
 #### 4.1、线程同步的属性
