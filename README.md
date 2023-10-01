@@ -386,6 +386,12 @@ RETURN VALUE
     Compile and link with -pthread.
 ```
 #### 2.3、线程的取消选项
+    取消有两种状态：允许 ：异步cancel，推迟cancel（默认）->推迟至cancel点才取消（POSIX定义的cancel点，都是可能引发阻塞的系统调用）
+                    pthread_setcancelstate():设置是否允许取消
+                    pthread_setcanceltype():设置取消方式
+                    pthread_testcancel();设置一个取消点
+            不允许 ：
+    线程分离：pthread_deatch():完全分离不用管资源回收
 ```
     #include <pthread.h>
 
@@ -393,6 +399,18 @@ RETURN VALUE
     Compile and link with -pthread
 ```
 ### 3、线程同步
+#### 3.1、互斥量
+```
+    #include <pthread.h>
+
+    int pthread_mutex_destroy(pthread_mutex_t *mutex);
+    int pthread_mutex_init(pthread_mutex_t *restrict mutex, const pthread_mutexattr_t *restrict attr);
+    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+    int pthread_mutex_lock(pthread_mutex_t *mutex);
+    int pthread_mutex_trylock(pthread_mutex_t *mutex);
+    int pthread_mutex_unlock(pthread_mutex_t *mutex);
+```
 ### 4、线程相关的属性
 #### 4.1、线程同步的属性
 ### 5、重入
