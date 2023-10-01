@@ -346,9 +346,35 @@ posix线程是一套标准，不是具体实现，eg：pthread_t,具体实现不
 RETURN VALUE
     On  success,  pthread_create() returns 0; on error, it returns an error number, and the contents of *thread are undefined.
 ```
-#### 2.1、线程的终止
-#### 2.2、线程的取消选项
-#### 2.3、线程栈的清理
+#### 2.1、线程的终止（三种方式）
+##### 2.1.1、线程从启动例程返回，返回值就是线程的退出码
+##### 2.1.2、线程可以被同一进程中的其他线程取消
+##### 2.1.3、线程调用pthread_exit()函数
+```
+    #include <pthread.h>
+
+    void pthread_exit(void *retval); // 类似于exit
+
+    Compile and link with -pthread.
+```
+```
+    #include <pthread.h>
+
+    int pthread_join(pthread_t thread, void **retval); // 类似于wait收尸
+
+    Compile and link with -pthread.
+
+```
+#### 2.2、线程栈的清理
+```
+    #include <pthread.h>
+
+    void pthread_cleanup_push(void (*routine)(void *), void *arg);
+    void pthread_cleanup_pop(int execute);
+
+    Compile and link with -pthread.
+```
+#### 2.3、线程的取消选项
 ### 3、线程同步
 ### 4、线程相关的属性
 #### 4.1、线程同步的属性
