@@ -325,3 +325,33 @@ extern char *sys_siglist [];
     Solaris提供一对函数，一个函数将信号编号映射为信号名，另一个则反之。p314
 ```
 ## 线程
+### 1、线程的概念
+一个正在运行的函数
+posix线程是一套标准，不是具体实现，eg：pthread_t,具体实现不清楚
+```
+    #include <pthread.h>
+
+    int pthread_equal(pthread_t t1, pthread_t t2); // 比较两个线程标识是否相等
+    pthread_t pthread_self(void); // 获取自身的线程标识
+    Compile and link with -pthread.
+```
+### 2、线程的创建
+线程的调度取决于调度器的策略
+```
+    #include <pthread.h>
+
+    int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
+
+    Compile and link with -pthread.
+RETURN VALUE
+    On  success,  pthread_create() returns 0; on error, it returns an error number, and the contents of *thread are undefined.
+```
+#### 2.1、线程的终止
+#### 2.2、线程的取消选项
+#### 2.3、线程栈的清理
+### 3、线程同步
+### 4、线程相关的属性
+#### 4.1、线程同步的属性
+### 5、重入
+#### 5.1、线程与信号
+#### 5.2、线程与fork
