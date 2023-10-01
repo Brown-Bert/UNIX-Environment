@@ -411,6 +411,12 @@ RETURN VALUE
     int pthread_mutex_trylock(pthread_mutex_t *mutex);
     int pthread_mutex_unlock(pthread_mutex_t *mutex);
 ```
+```
+    #include <sched.h>
+
+    int sched_yield(void);
+    // 线程调度该方法，出让调度器给其他的线程
+```
 ### 4、线程相关的属性
 #### 4.1、线程同步的属性
 ### 5、重入
