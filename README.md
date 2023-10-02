@@ -432,9 +432,42 @@ RETURN VALUE
     int pthread_cond_wait(pthread_cond_t *restrict cond, pthread_mutex_t *restrict mutex);
 ```
 #### 3.3、信号量
+实现：互斥量+条件变量
+#### 3.4、读写锁
 实现：互斥量+信号量
 ### 4、线程相关的属性
+```
+    #include <pthread.h>
+
+    int pthread_attr_init(pthread_attr_t *attr);
+    int pthread_attr_destroy(pthread_attr_t *attr);
+
+    Compile and link with -pthread.
+```
 #### 4.1、线程同步的属性
+##### 4.1.1、互斥量属性
+```
+    #include <pthread.h>
+
+    int pthread_mutexattr_init(pthread_mutexattr_t *attr);
+    int pthread_mutexattr_destroy(pthread_mutexattr_t *attr)；
+
+    // 设置的互斥量属性是否是跨进程
+    int pthread_mutexattr_getpshared(const pthread_mutexattr_t *attr, int *pshared);
+    int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr, int pshared);
+
+    #define _GNU_SOURCE
+    #include <sched.h>
+
+    // 可以创建似进程非进程，似线程非线程
+    int clone(int (*fn)(void *), void *stack, int flags, void *arg, .../* pid_t *parent_tid, void *tls, pid_t *child_tid */ );
+
+    int pthread_mutexattr_gettype(const pthread_mutexattr_t *restrict attr,int *restrict type);
+    int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type);
+    ![Alt text](./images/mutex.png);
+```
+##### 4.1.2、条件变量属性
+
 ### 5、重入
 #### 5.1、线程与信号
 #### 5.2、线程与fork
