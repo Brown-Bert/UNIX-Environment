@@ -406,6 +406,12 @@ RETURN VALUE
     int pthread_mutex_unlock(pthread_mutex_t *mutex);
 ```
 ```
+    #include <pthread.h>
+    #include <time.h>
+
+    int pthread_mutex_timedlock(pthread_mutex_t *restrict mutex, const struct timespec *restrict abstime);
+```
+```
     #include <sched.h>
 
     int sched_yield(void);
@@ -440,8 +446,16 @@ RETURN VALUE
     int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);
 
     int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);
+    int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock);
     
     int pthread_rwlock_unlock(pthread_rwlock_t *rwlock);
+```
+```
+    #include <pthread.h>
+    #include <time.h>
+
+    int pthread_rwlock_timedrdlock(pthread_rwlock_t *restrict rwlock, const struct timespec *restrict abstime);
+    int pthread_rwlock_timedwrlock(pthread_rwlock_t *restrict rwlock, const struct timespec *restrict abstime);
 ```
 ### 4、线程相关的属性
 ```
