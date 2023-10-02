@@ -430,8 +430,9 @@ RETURN VALUE
 
     int pthread_cond_timedwait(pthread_cond_t *restrict cond, pthread_mutex_t *restrict mutex, const struct timespec *restrict abstime);
     int pthread_cond_wait(pthread_cond_t *restrict cond, pthread_mutex_t *restrict mutex);
-
 ```
+#### 3.3、信号量
+实现：互斥量+信号量
 ### 4、线程相关的属性
 #### 4.1、线程同步的属性
 ### 5、重入
