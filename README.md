@@ -457,7 +457,29 @@ RETURN VALUE
     int pthread_rwlock_timedrdlock(pthread_rwlock_t *restrict rwlock, const struct timespec *restrict abstime);
     int pthread_rwlock_timedwrlock(pthread_rwlock_t *restrict rwlock, const struct timespec *restrict abstime);
 ```
-### 4、线程相关的属性
+#### 3.5、自旋锁
+```
+    #include <pthread.h>
+
+    int pthread_spin_init(pthread_spinlock_t *lock, int pshared);
+    int pthread_spin_destroy(pthread_spinlock_t *lock);
+
+    int pthread_spin_lock(pthread_spinlock_t *lock);
+    int pthread_spin_trylock(pthread_spinlock_t *lock);
+    int pthread_spin_unlock(pthread_spinlock_t *lock);
+
+    Compile and link with -pthread.
+```
+### 4、屏障
+```
+    #include <pthread.h>
+
+    int pthread_barrier_destroy(pthread_barrier_t *barrier);
+    int pthread_barrier_init(pthread_barrier_t *restrict barrier, const pthread_barrierattr_t *restrict attr, unsigned count);
+
+    int pthread_barrier_wait(pthread_barrier_t *barrier);
+```
+### 5、线程相关的属性
 ```
     #include <pthread.h>
 
@@ -483,8 +505,8 @@ RETURN VALUE
 
     Compile and link with -pthread.
 ```
-#### 4.1、线程同步的属性
-##### 4.1.1、互斥量属性
+#### 5.1、线程同步的属性
+##### 5.1.1、互斥量属性
 ```
     #include <pthread.h>
 
@@ -505,24 +527,24 @@ RETURN VALUE
     int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type);
     ![Alt text](./images/mutex.png);
 ```
-##### 4.1.2、条件变量属性
+##### 5.1.2、条件变量属性
 ```
     #include <pthread.h>
 
     int pthread_condattr_destroy(pthread_condattr_t *attr);
     int pthread_condattr_init(pthread_condattr_t *attr); // see also
 ```
-##### 4.1.3、读写锁属性
+##### 5.1.3、读写锁属性
 ```
     #include <pthread.h>
 
     int pthread_rwlockattr_destroy(pthread_rwlockattr_t *attr);
     int pthread_rwlockattr_init(pthread_rwlockattr_t *attr); // see also
 ```
-### 5、重入
-#### 5.1、多线程中的IO
+### 6、重入
+#### 6.1、多线程中的IO
 都支持并发，也有不支持并发的版本，基本都是在名字后面加了unlock来表示该版本不支持多线程并发
-#### 5.1、线程与信号
+#### 6.2、线程与信号
 ```
     #include <signal.h>
 
@@ -532,4 +554,4 @@ RETURN VALUE
 
     Compile and link with -pthread.
 ```
-#### 5.2、线程与fork
+#### 6.3、线程与fork
