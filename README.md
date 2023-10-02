@@ -192,7 +192,6 @@ DESCRIPTION
         time_t      tv_sec;         /* seconds */
         suseconds_t tv_usec;        /* microseconds */
     };
-
 ```
 #### 6.4、pause();
 ```
@@ -208,7 +207,6 @@ RETURN VALUE
     #include <stdlib.h>
 
     void abort(void);
-
 ```
 #### 6.6、system();
 ```
@@ -261,7 +259,6 @@ RETURN VALUE
 
     int sigpending(sigset_t *set); 信号被放入进set的条件是：1、该信号是阻塞，2、向该进程发送了信号（无论是怎么发送过来的）
     进程可以选用“阻塞信号递送”。如果为进程产生了一个阻塞的信号，而且对该信号的动作是系统默认动作或捕捉该信号，则为该进程将此信号保持为未决状态，直到该进程对此信号解除了阻塞，或者将对此信号的动作更改为忽略。内核在递送一个原来被阻塞的信号给进程时(而不是在产生该信号时)，才决定对它的处理方式。于是进程在信号递送给它之前仍可改变对该信号的动作。进程调用sigpending函数来判定哪些信号是设置为阻塞并处于未决状态的。
-
 ```
 ### 9、扩展
 #### 9.1、sigsuspend();
@@ -299,8 +296,6 @@ sigaction实在处理响应函数内部才去进行屏蔽结构体中带的信�
         int   sival_int;
         void *sival_ptr;
     };
-
-
 ```
 ### 10、实时信号
 实时信号不丢失，要排队有上限（ulimit -a）,实时信号的默认行为是终止进程
@@ -374,7 +369,6 @@ RETURN VALUE
     int pthread_join(pthread_t thread, void **retval); // 类似于wait收尸
 
     Compile and link with -pthread.
-
 ```
 #### 2.2、线程栈的清理
 ```
@@ -435,12 +429,43 @@ RETURN VALUE
 实现：互斥量+条件变量
 #### 3.4、读写锁
 实现：互斥量+信号量
+```
+    #include <pthread.h>
+
+    int pthread_rwlock_destroy(pthread_rwlock_t *rwlock);
+    int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock, const pthread_rwlockattr_t *restrict attr);
+    pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER;
+
+    int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);
+    int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);
+
+    int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);
+    
+    int pthread_rwlock_unlock(pthread_rwlock_t *rwlock);
+```
 ### 4、线程相关的属性
 ```
     #include <pthread.h>
 
     int pthread_attr_init(pthread_attr_t *attr);
-    int pthread_attr_destroy(pthread_attr_t *attr);
+    int pthread_attr_destroy(pthread_attr_t *attr); // see also 通过暴露的接口来设置属性，下面的互斥量、条件变量、读写锁也是使用这一套接口
+
+    pthread_attr_setaffinity_np(3), 
+    pthread_attr_setdetachstate(3),
+    pthread_attr_setguardsize(3), 
+    pthread_attr_setinheritsched(3),
+    pthread_attr_setschedparam(3), 
+    pthread_attr_setschedpolicy(3),
+    pthread_attr_setscope(3), 
+    pthread_attr_setsigmask_np(3),
+    pthread_attr_setstack(3), 
+    pthread_attr_setstackaddr(3),
+    pthread_attr_setstacksize(3), 
+    pthread_create(3), 
+    pthread_getattr_np(3),
+    pthread_setattr_default_np(3), 
+    pthreads(7)
+
 
     Compile and link with -pthread.
 ```
@@ -450,7 +475,7 @@ RETURN VALUE
     #include <pthread.h>
 
     int pthread_mutexattr_init(pthread_mutexattr_t *attr);
-    int pthread_mutexattr_destroy(pthread_mutexattr_t *attr)；
+    int pthread_mutexattr_destroy(pthread_mutexattr_t *attr)；// see also
 
     // 设置的互斥量属性是否是跨进程
     int pthread_mutexattr_getpshared(const pthread_mutexattr_t *attr, int *pshared);
@@ -467,7 +492,21 @@ RETURN VALUE
     ![Alt text](./images/mutex.png);
 ```
 ##### 4.1.2、条件变量属性
+```
+    #include <pthread.h>
 
+    int pthread_condattr_destroy(pthread_condattr_t *attr);
+    int pthread_condattr_init(pthread_condattr_t *attr); // see also
+```
+##### 4.1.3、读写锁属性
+```
+    #include <pthread.h>
+
+    int pthread_rwlockattr_destroy(pthread_rwlockattr_t *attr);
+    int pthread_rwlockattr_init(pthread_rwlockattr_t *attr); // see also
+```
 ### 5、重入
+#### 5.1、多线程中的IO
+都支持并发，也有不支持并发的版本，基本都是在名字后面加了unlock来表示该版本不支持多线程并发
 #### 5.1、线程与信号
 #### 5.2、线程与fork
