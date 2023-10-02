@@ -44,7 +44,6 @@ static void *func(void *) {
     }
   }
 }
-
 static void *function(void *) {
   int i = LEFT;
   while (i <= RIGHT) {
