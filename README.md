@@ -509,4 +509,13 @@ RETURN VALUE
 #### 5.1、多线程中的IO
 都支持并发，也有不支持并发的版本，基本都是在名字后面加了unlock来表示该版本不支持多线程并发
 #### 5.1、线程与信号
+```
+    #include <signal.h>
+
+    int pthread_sigmask(int how, const sigset_t *set, sigset_t *oldset);
+    int sigwait(const sigset_t *set, int *sig);
+    int pthread_kill(pthread_t thread, int sig);
+
+    Compile and link with -pthread.
+```
 #### 5.2、线程与fork
