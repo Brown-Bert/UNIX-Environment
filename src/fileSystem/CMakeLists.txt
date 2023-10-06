@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(unix)
 # find_package(Threads REQUIRED)
-add_executable(copymain copymain.cpp copyfile.cpp)
+add_executable(main systemMain.cpp filesystem.cpp copyfile.cpp)
 # target_link_libraries(copymain Threads::Threads)

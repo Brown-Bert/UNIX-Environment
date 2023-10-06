@@ -51,7 +51,7 @@ static void *function(void *) {
       //   sched_yield();
       //   sleep(1);
       pthread_mutex_lock(&mut);
-      puts("123");
+      // puts("123");
       tasksize++;
       tasks.push(i);
       pthread_mutex_unlock(&mut);
