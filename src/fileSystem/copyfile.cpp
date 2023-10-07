@@ -61,6 +61,12 @@ void CopyFileClass::initMutexAndCondition() {
   pthread_cond_init(&(_condStoD), NULL);
   pthread_cond_init(&(_condDtoS), NULL);
   pthread_spin_init(&(sp), 0);
+  // 把数据初始化
+  _taskSize = 0;
+  _offset = 0;
+  sumSize = 0;
+  count = 0;
+  _fileFlag = false;
 }
 
 /**
@@ -90,7 +96,7 @@ static bool readOneBlock(int fd, node *oneNode, int _blockSize) {
     return false;
   }
   oneNode->_realsize = realSize;
-  printf("size: %d\n", realSize);
+  // printf("size: %d\n", realSize);
   return true;
 }
 
@@ -110,12 +116,14 @@ static void *openSouFileAndRead(void *p) {
   exceedTime.tv_nsec = 0;
   exceedTime.tv_sec = 1;
   while (1) {
+    // pthread_mutex_lock(&(_mut));
     pthread_cond_timedwait(&(_condDtoS), &(_mut), &exceedTime);
     if (_fileFlag) {
       // 文件读完了
       break;
     }
     int flag = 1;
+    // printf("size: %d\n", _taskSize);
     if (_taskSize == 0) {
       // 说明任务队列中已经没有任务了，需要往任务队列中放任务
       for (int i = 0; i < data->_threadNum; i++) {
@@ -167,24 +175,25 @@ static void *openDesFileAndWrite(void *p) {
   exceedTime.tv_nsec = 0;
   exceedTime.tv_sec = 1;
   while (1) {
+    pthread_mutex_lock(&(_mut));
     pthread_cond_wait(&(_condStoD), &(_mut));
     while (1) {
       if (_taskSize == 0) {
         pthread_spin_lock(&(sp));
         count++;
+        pthread_spin_unlock(&(sp));
         if (count == data->_threadNum) {
-          pthread_cond_signal(&(_condDtoS));
+          if (!_fileFlag) pthread_cond_signal(&(_condDtoS));
           _offset += sumSize;
           sumSize = 0;
           count = 0;
+          // _fileFlag = false;
         }
-        pthread_spin_unlock(&(sp));
         pthread_mutex_unlock(&(_mut));
         break;
       } else {
         node *oneNode = _tasks.front();
         _tasks.pop();
-        printf("tasksize: %d\n", _taskSize);
         _taskSize--;
         sumSize += oneNode->_realsize;
         // lseek(fd, _offset + oneNode._index * data->_blockSize, SEEK_SET);
@@ -195,9 +204,11 @@ static void *openDesFileAndWrite(void *p) {
         inode.myread(transformInode(pos));
         // 去位图中找一块空的数据块
         int respos = findInDataBitMap();
+        // puts("找到");
         if (respos < 0) {
           // 申请数据块失败
           fprintf(stderr, "apply for data block failed\n");
+          _fileFlag = true;
           pthread_exit(NULL);
         }
         // 修改inode节点信息
@@ -221,7 +232,8 @@ static void *openDesFileAndWrite(void *p) {
         // 释放堆上的内存
         free(oneNode->_buf);
         free(oneNode);
-        puts("output task");
+        // puts("output task");
+        printf("output task: tid = %d\n", gettid());
       }
       pthread_mutex_lock(&(_mut));
     }

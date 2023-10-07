@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(unix)
-# find_package(Threads REQUIRED)
+# find_package(Readline REQUIRED)
+# 手动指定 readline 库的路径
+
 add_executable(main systemMain.cpp filesystem.cpp copyfile.cpp)
-# target_link_libraries(copymain Threads::Threads)

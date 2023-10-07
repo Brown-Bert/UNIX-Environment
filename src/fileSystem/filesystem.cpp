@@ -416,6 +416,21 @@ off64_t transformDataBit(int pos) { return 64 * 1024 + pos * 64 * 1024; }
   创建一个文件用于接收数据
 */
 bool mymkfile(string name) {
+  FileSystem node;
+  ReadSuperBlock(&node);
+  Line line;
+  int flag = 0;
+  for (int i = 0; i < (node.inode_size - node.inode_leave); i++) {
+    line.myread(64 + 48 * 1024 + 2 + 32 + i * sizeof(line));
+    if (line.file_name == name) {
+      flag = 1;
+      break;
+    }
+  }
+  if (flag) {
+    cout << "文件已经存在，不能再次创建" << endl;
+    return false;
+  }
   int resPos = findInInodeBitMap();
   if (resPos < 0) {
     return false;
@@ -436,12 +451,9 @@ bool mymkfile(string name) {
   }
   inode.mywrite(offsetPos);
   // 修改超级块中的inode节点剩余个数
-  FileSystem node;
-  ReadSuperBlock(&node);
   node.inode_leave -= 1;
   node.mywrite(0);
   // 往inode节点与filename相对应的表中填写
-  Line line;
   line.inode_pos = resPos;
   memcpy(line.file_name, name.c_str(), sizeof(name));
   line.mywrite(64 + 48 * 1024 + 2 + 32 +
@@ -493,11 +505,13 @@ void fileinfo(string flag) {
     FileSystem node;
     ReadSuperBlock(&node);
     Line line;
+    int flag = 0;
     for (int i = 0; i < (node.inode_size - node.inode_leave); i++) {
       line.myread(64 + 48 * 1024 + 2 + 32 + i * sizeof(line));
       cout << line.file_name << "\t";
+      flag = 1;
     }
-    cout << endl;
+    if (flag) cout << endl;
   } else if (flag == "ll") {
     FileSystem node;
     ReadSuperBlock(&node);
@@ -603,16 +617,28 @@ void menu(const string option, const string name) {
     bool res = mymkfile(name);
     if (res == false) {
       cout << "文件创建失败" << endl;
+    } else {
+      cout << "文件创建成功" << endl;
     }
   } else if (option == "rm") {
     bool res = deleteFile(name);
     if (res == false) {
       cout << "文件删除失败" << endl;
+    } else {
+      cout << "文件删除成功" << endl;
     }
   } else if (option == "cat") {
+    mycat(name);
   } else if (option == "vi") {
     transformData(name);
+  } else if (option == "checki") {
+    printInodeBitMap();
+  } else if (option == "checkd") {
+    printDataBitMap();
   } else {
+    if (option == "") {
+      return;
+    }
     cout << "----------------------------------------------" << endl;
     cout << "no such comman! you can use the fellows!" << endl;
     cout << "ls | ll: check the information of files. eg: ll" << endl;
@@ -620,6 +646,8 @@ void menu(const string option, const string name) {
     cout << "rm:\t delete a file. eg: rm <filename>" << endl;
     cout << "cat:\t check the content of the file. eg: cat <filename>" << endl;
     cout << "vi:\t edit the content of the file. eg: vi <filename>" << endl;
+    cout << "checki:\t check the inode bit map. eg: checki" << endl;
+    cout << "checkd:\t check the data bit map. eg: checkd" << endl;
     cout << "----------------------------------------------" << endl;
   }
 }
@@ -645,10 +673,60 @@ int relativePos(string name) {
   文件创建好之后就要模拟数据传输
 */
 void transformData(string desFileName) {
+  // 先要判断文件name存不存在
+  FileSystem node;
+  ReadSuperBlock(&node);
+  Line line;
+  int flag = 1;
+  for (int i = 0; i < (node.inode_size - node.inode_leave); i++) {
+    line.myread(64 + 48 * 1024 + 2 + 32 + i * sizeof(line));
+    if (line.file_name == desFileName) {
+      flag = 0;
+      break;
+    }
+  }
+  if (flag) {
+    cout << "文件不存在，不能向一个不存在的文件传输数据" << endl;
+    return;
+  }
   CopyFileClass copyFile(3, 64 * 1024);
   copyFile.initFilePath(
       "/home/yzx/vscode/workspace/unixenv/src/thread/test.txt", desFileName);
   copyFile.initMutexAndCondition();
   copyFile.copyFile();
   copyFile.destroyMutexAndCondition();
+}
+
+/**
+  使用cat命令查看文件
+*/
+void mycat(string name) {
+  // 先要判断文件name存不存在
+  FileSystem node;
+  ReadSuperBlock(&node);
+  Line line;
+  int flag = 1;
+  for (int i = 0; i < (node.inode_size - node.inode_leave); i++) {
+    line.myread(64 + 48 * 1024 + 2 + 32 + i * sizeof(line));
+    if (line.file_name == name) {
+      flag = 0;
+      break;
+    }
+  }
+  if (flag) {
+    cout << "文件不存在" << endl;
+    return;
+  }
+  Inode inode;
+  inode.myread(transformInode(line.inode_pos));
+  char buf[BLOCKSIZE];
+  int fd = open(filename.c_str(), O_RDONLY);
+  if (fd < 0) {
+    perror("open()");
+    return;
+  }
+  for (int i = 0; i < inode.i_blocks; i++) {
+    read(fd, buf, BLOCKSIZE);
+    printf("%s", buf);
+  }
 }

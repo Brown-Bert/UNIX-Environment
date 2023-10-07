@@ -56,6 +56,12 @@ void CopyFileClass::initMutexAndCondition() {
   pthread_cond_init(&(_condStoD), NULL);
   pthread_cond_init(&(_condDtoS), NULL);
   pthread_spin_init(&(sp), 0);
+  // 把数据初始化
+  _taskSize = 0;
+  _offset = 0;
+  sumSize = 0;
+  count = 0;
+  _fileFlag = false;
 }
 
 /**
@@ -105,6 +111,7 @@ static void *openSouFileAndRead(void *p) {
   exceedTime.tv_nsec = 0;
   exceedTime.tv_sec = 1;
   while (1) {
+    pthread_mutex_lock(&(_mut));
     pthread_cond_timedwait(&(_condDtoS), &(_mut), &exceedTime);
     if (_fileFlag) {
       // 文件读完了
@@ -160,18 +167,19 @@ static void *openDesFileAndWrite(void *p) {
   exceedTime.tv_nsec = 0;
   exceedTime.tv_sec = 1;
   while (1) {
+    pthread_mutex_lock(&(_mut));
     pthread_cond_wait(&(_condStoD), &(_mut));
     while (1) {
       if (_taskSize == 0) {
         pthread_spin_lock(&(sp));
         count++;
+        pthread_spin_unlock(&(sp));
         if (count == data->_threadNum) {
           pthread_cond_signal(&(_condDtoS));
           _offset += sumSize;
           sumSize = 0;
           count = 0;
         }
-        pthread_spin_unlock(&(sp));
         pthread_mutex_unlock(&(_mut));
         break;
       } else {

@@ -7,6 +7,8 @@
 #include <string>
 using namespace std;
 
+#include <list>
+
 #include "copyfile.h"
 #include "filesystem.h"
 int main() {
@@ -14,9 +16,15 @@ int main() {
   string input;
   string option;
   string name;
+  // list<string> historyList;
   while (1) {
     printf("yzx-filesystem$ ");
+
     getline(cin, input);
+    // add_history(input.c_str());
+    // if (input != "") {
+    //   historyList.push_back(input);
+    // }
     if (input == "exit") {
       printf("do you want to delete system [Y/n? ]");
       getline(cin, input);
@@ -31,7 +39,7 @@ int main() {
       option = input;
     } else {
       option = input.substr(0, pos);
-      name = input.substr(pos);
+      name = input.substr(pos + 1);
     }
     menu(option, name);
     // cout << "option " << option << endl;
