@@ -726,7 +726,9 @@ void mycat(string name) {
     return;
   }
   for (int i = 0; i < inode.i_blocks; i++) {
+    lseek(fd, (inode.i_where[i] + 1) * 64 * 1024, SEEK_SET);
     read(fd, buf, BLOCKSIZE);
     printf("%s", buf);
   }
+  cout << endl;
 }
