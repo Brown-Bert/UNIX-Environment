@@ -555,3 +555,12 @@ RETURN VALUE
     Compile and link with -pthread.
 ```
 #### 6.3、线程与fork
+## 存储映射IO
+### mmap映射
+```
+void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+```
+### munmap解除映射
+```
+int munmap(void *addr, size_t length);
+```
