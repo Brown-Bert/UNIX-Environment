@@ -568,3 +568,34 @@ int munmap(void *addr, size_t length);
 ### fcntl
 ### lockf
 ### flock
+## 进程间通信
+### 管道
+#### 匿名管道
+```
+    #include <unistd.h>
+
+    /* On Alpha, IA-64, MIPS, SuperH, and SPARC/SPARC64; see NOTES */
+    struct fd_pair {
+        long fd[2];
+    };
+    struct fd_pair pipe();
+
+    /* On all other architectures */
+    int pipe(int pipefd[2]);
+
+    #define _GNU_SOURCE             /* See feature_test_macros(7) */
+    #include <fcntl.h>              /* Obtain O_* constant definitions */
+    #include <unistd.h>
+
+    int pipe2(int pipefd[2], int flags);
+```
+#### 命名管道
+```
+    #include <sys/types.h>
+    #include <sys/stat.h>
+
+    int mkfifo(const char *pathname, mode_t mode);
+
+```
+### XSI -> SysV
+### 网络套接字socket
