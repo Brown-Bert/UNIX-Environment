@@ -598,4 +598,44 @@ int munmap(void *addr, size_t length);
 
 ```
 ### XSI -> SysV
+#### IPC -> Inter-Process Communication
+    主动端：先发包的一方
+    被动端：先收包的一方（先运行）
+
+    key:ftok()
+    ```
+    #include <sys/types.h>
+    #include <sys/ipc.h>
+
+    key_t ftok(const char *pathname, int proj_id);
+    ```
+#### Message Queues
+##### msgget()
+```
+    #include <sys/types.h>
+    #include <sys/ipc.h>
+    #include <sys/msg.h>
+
+    int msgget(key_t key, int msgflg);
+```
+##### msgop()
+```
+    #include <sys/types.h>
+    #include <sys/ipc.h>
+    #include <sys/msg.h>
+
+    int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg);
+
+    ssize_t msgrcv(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg);
+```
+##### msgctl()
+```
+    #include <sys/types.h>
+    #include <sys/ipc.h>
+    #include <sys/msg.h>
+
+    int msgctl(int msqid, int cmd, struct msqid_ds *buf);
+```
+#### Semaphore Arrays
+#### Shared Memory
 ### 网络套接字socket
