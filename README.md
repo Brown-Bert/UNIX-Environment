@@ -639,3 +639,23 @@ int munmap(void *addr, size_t length);
 #### Semaphore Arrays
 #### Shared Memory
 ### 网络套接字socket
+#### 报式套接字
+```
+    #include <sys/types.h>          /* See NOTES */
+    #include <sys/socket.h>
+
+    int socket(int domain, int type, int protocol);
+```
+```
+    socket()
+    bind()
+    sendto;
+    recvfrom();
+    inet_pton();
+    inet_ntop();
+    close();
+    setsockopt();
+    getsockopt();
+    多点通讯：广播（全网广播，子网广播），多播/组播
+```
+#### 流式套接字
